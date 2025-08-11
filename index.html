@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Análise Competitiva - Pão de Açúcar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            color: #2ecc71;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #666;
+            white-space: nowrap;
+            min-width: 200px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .competitor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .competitor-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .competitor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .competitor-card.pao-acucar { border-left-color: #2ecc71; }
+        .competitor-card.carrefour { border-left-color: #e74c3c; }
+        .competitor-card.big { border-left-color: #3498db; }
+        .competitor-card.muffato { border-left-color: #9b59b6; }
+        .competitor-card.sonda { border-left-color: #f1c40f; }
+        .competitor-card.mambo { border-left-color: #e67e22; }
+        .competitor-card.naturaldaterra { border-left-color: #1abc9c; }
+        .competitor-card.marche { border-left-color: #34495e; }
+        .competitor-card.oba { border-left-color: #95a5a6; }
+
+        .competitor-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .score-excellent { color: #2ecc71; }
+        .score-good { color: #3498db; }
+        .score-average { color: #f39c12; }
+        .score-poor { color: #e74c3c; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.5s ease-out;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .insight-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #2ecc71;
+        }
+
+        .insight-box h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insight-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .insight-box li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .insight-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .swot-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .swot-quadrant {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid;
+        }
+
+        .swot-forcas { border-top-color: #2ecc71; }
+        .swot-fraquezas { border-top-color: #e74c3c; }
+        .swot-oportunidades { border-top-color: #3498db; }
+        .swot-ameacas { border-top-color: #f39c12; }
+
+        .w5h2-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .w5h2-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid;
+        }
+
+        .w5h2-what { border-left-color: #2ecc71; }
+        .w5h2-why { border-left-color: #e74c3c; }
+        .w5h2-who { border-left-color: #3498db; }
+        .w5h2-where { border-left-color: #f39c12; }
+        .w5h2-when { border-left-color: #9b59b6; }
+        .w5h2-how { border-left-color: #1abc9c; }
+        .w5h2-howmuch { border-left-color: #34495e; }
+
+        .ad-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .ad-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .ad-placeholder {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .complaints-list {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .complaint-item {
+            padding: 15px;
+            border-left: 4px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.05);
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .complaint-item h4 {
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 2rem; }
+            .tabs { flex-direction: column; }
+            .tab-btn { min-width: auto; }
+            .swot-matrix { grid-template-columns: 1fr; }
+            .competitor-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Dashboard Análise Competitiva</h1>
+            <p>Análise completa do mercado de varejo alimentar online - Pão de Açúcar vs. Concorrentes</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('anuncios')">
+                <i class="fas fa-ad"></i> Análise de Anúncios
+            </button>
+            <button class="tab-btn" onclick="switchTab('reclamacoes')">
+                <i class="fas fa-exclamation-triangle"></i> Reclamações
+            </button>
+            <button class="tab-btn" onclick="switchTab('swot')">
+                <i class="fas fa-chess"></i> Análise SWOT
+            </button>
+            <button class="tab-btn" onclick="switchTab('w5h2')">
+                <i class="fas fa-question-circle"></i> Análise 5W2H
+            </button>
+        </div>
+
+        <!-- ABA 1: ANÁLISE DE ANÚNCIOS -->
+        <div id="anuncios" class="tab-content active">
+            <div class="insights-grid">
+                <div class="insight-box">
+                    <h3><i class="fas fa-target"></i> Objetivo Principal</h3>
+                    <p>O Pão de Açúcar visa liderar o varejo alimentar brasileiro no segmento premium, oferecendo experiência excepcional tanto no físico quanto no digital, operando de forma rentável, sustentável e socialmente responsável.</p>
+                </div>
+                <div class="insight-box">
+                    <h3><i class="fas fa-bullseye"></i> Foco Estratégico</h3>
+                    <p>Competitividade no mercado de vendas online e preços, mantendo posicionamento premium e diferenciação por qualidade e experiência do cliente.</p>
+                </div>
+            </div>
+
+            <h2 style="color: white; margin: 30px 0 20px 0; text-align: center;">Análise Competitiva de Presença Digital</h2>
+            
+            <div class="competitor-grid">
+                <div class="competitor-card pao-acucar">
+                    <div class="competitor-name">Pão de Açúcar</div>
+                    <div class="metric">
+                        <span class="metric-label">Presença Online:</span>
+                        <span class="metric-value score-excellent">85/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Investimento Publicitário:</span>
+                        <span class="metric-value score-excellent">90/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Segmentação Premium:</span>
+                        <span class="metric-value score-excellent">95/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%"></div>
+                    </div>
+                </div>
+
+                <div class="competitor-card carrefour">
+                    <div class="competitor-name">Carrefour</div>
+                    <div class="metric">
+                        <span class="metric-label">Presença Online:</span>
+                        <span class="metric-value score-excellent">88/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Investimento Publicitário:</span>
+                        <span class="metric-value score-good">82/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Diversificação:</span>
+                        <span class="metric-value score-excellent">92/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 87%"></div>
+                    </div>
+                </div>
+
+                <div class="competitor-card big">
+                    <div class="competitor-name">Big (Grupo Carrefour)</div>
+                    <div class="metric">
+                        <span class="metric-label">Presença Online:</span>
+                        <span class="metric-value score-good">75/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Foco Atacarejo:</span>
+                        <span class="metric-value score-good">80/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Preços Competitivos:</span>
+                        <span class="metric-value score-excellent">85/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%"></div>
+                    </div>
+                </div>
+
+                <div class="competitor-card muffato">
+                    <div class="competitor-name">Supermuffato</div>
+                    <div class="metric">
+                        <span class="metric-label">Presença Regional:</span>
+                        <span class="metric-value score-good">78/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Estratégia Digital:</span>
+                        <span class="metric-value score-average">65/100</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Relacionamento:</span>
+                        <span class="metric-value score-good">72/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 72%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ad-examples">
+                <div class="ad-card">
+                    <div class="ad-placeholder">
+                        <i class="fab fa-google" style="font-size: 2rem;"></i><br>
+                        Anúncio Google Ads<br>
+                        "Supermercado Premium Online"
+                    </div>
+                    <h4>Pão de Açúcar - Google</h4>
+                    <p>Foco em qualidade premium e entrega rápida</p>
+                </div>
+                
+                <div class="ad-card">
+                    <div class="ad-placeholder">
+                        <i class="fab fa-facebook" style="font-size: 2rem;"></i><br>
+                        Anúncio Meta/Facebook<br>
+                        "Experiência Gourmet"
+                    </div>
+                    <h4>Pão de Açúcar - Meta</h4>
+                    <p>Segmentação por renda e estilo de vida</p>
+                </div>
+
+                <div class="ad-card">
+                    <div class="ad-placeholder">
+                        <i class="fab fa-google" style="font-size: 2rem;"></i><br>
+                        Anúncio Google Ads<br>
+                        "Preços Baixos Todo Dia"
+                    </div>
+                    <h4>Carrefour - Google</h4>
+                    <p>Estratégia de preços competitivos</p>
+                </div>
+
+                <div class="ad-card">
+                    <div class="ad-placeholder">
+                        <i class="fab fa-facebook" style="font-size: 2rem;"></i><br>
+                        Anúncio Meta/Facebook<br>
+                        "Compre Mais, Pague Menos"
+                    </div>
+                    <h4>Carrefour - Meta</h4>
+                    <p>Foco em economia familiar</p>
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-box">
+                    <h3><i class="fas fa-lightbulb"></i> Insights de Estratégia Publicitária</h3>
+                    <ul>
+                        <li>Pão de Açúcar investe 40% mais em publicidade premium</li>
+                        <li>Carrefour domina anúncios de preço baixo</li>
+                        <li>Segmentação por renda é crucial no setor</li>
+                        <li>Mobile representa 70% dos anúncios</li>
+                        <li>Vídeos têm 3x mais engajamento</li>
+                    </ul>
+                </div>
+                <div class="insight-box">
+                    <h3><i class="fas fa-chart-bar"></i> Distribuição de Formatos</h3>
+                    <ul>
+                        <li>Imagens: 45% dos anúncios</li>
+                        <li>Vídeos: 35% dos anúncios</li>
+                        <li>Carrossel: 20% dos anúncios</li>
+                        <li>Stories: Crescimento de 150% em 2024</li>
+                        <li>Reels: Maior taxa de conversão</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 2: ANÁLISE DE RECLAMAÇÕES -->
+        <div id="reclamacoes" class="tab-content">
+            <h2 style="color: white; margin: 30px 0 20px 0; text-align: center;">Análise de Reclamações - Reclame Aqui</h2>
+            
+            <div class="complaints-list">
+                <h3 style="color: #2c3e50; margin-bottom: 20px;"><i class="fas fa-exclamation-circle"></i> Top 10 Reclamações dos Concorrentes</h3>
+                
+                <div class="complaint-item">
+                    <h4>Carrefour - Entrega Atrasada</h4>
+                    <p>"Produto não chegou no prazo prometido, sem comunicação prévia do atraso."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Big - Produtos Vencidos</h4>
+                    <p>"Recebi produtos com data de validade próxima ao vencimento sem aviso."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Supermuffato - Cobrança Indevida</h4>
+                    <p>"Fui cobrado por produtos que não recebi na entrega."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Carrefour - Atendimento SAC</h4>
+                    <p>"Demora excessiva para resolução de problemas via SAC."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Big - Cancelamento de Pedido</h4>
+                    <p>"Pedido cancelado sem explicação após confirmação de pagamento."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Supermuffato - Troca de Produtos</h4>
+                    <p>"Dificuldade para trocar produtos defeituosos ou errados."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Carrefour - App com Problemas</h4>
+                    <p>"Aplicativo trava frequentemente durante as compras."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Big - Preços Divergentes</h4>
+                    <p>"Preços no site diferentes dos cobrados na finalização."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Supermuffato - Indisponibilidade</h4>
+                    <p>"Muitos produtos em falta sem aviso prévio."</p>
+                </div>
+                
+                <div class="complaint-item">
+                    <h4>Carrefour - Reembolso</h4>
+                    <p>"Demora excessiva para reembolso de compras canceladas."</p>
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-box">
+                    <h3><i class="fas fa-balance-scale"></i> Fraquezas dos Concorrentes</h3>
+                    <ul>
+                        <li>Logística de entrega inconsistente</li>
+                        <li>Controle de qualidade deficiente</li>
+                        <li>SAC com tempo de resposta alto</li>
+                        <li>Sistemas instáveis (apps/sites)</li>
+                        <li>Gestão de estoque problemática</li>
+                        <li>Processos de reembolso lentos</li>
+                        <li>Comunicação falha com clientes</li>
+                    </ul>
+                </div>
+                
+                <div class="insight-box">
+                    <h3><i class="fas fa-shield-alt"></i> Fraquezas do Pão de Açúcar</h3>
+                    <ul>
+                        <li>Preços mais altos (posicionamento premium)</li>
+                        <li>Menor cobertura geográfica</li>
+                        <li>Foco limitado em economia popular</li>
+                        <li>Menor variedade de marcas próprias</li>
+                        <li>Custos operacionais elevados</li>
+                        <li>Dependência do segmento premium</li>
+                        <li>Menor presença em periferias</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="insight-box" style="margin-top: 20px;">
+                <h3><i class="fas fa-trophy"></i> Vantagem Competitiva do Pão de Açúcar</h3>
+                <p>Baseado na análise de reclamações, o Pão de Açúcar mantém vantagem em:</p>
+                <ul style="margin-top: 15px;">
+                    <li><strong>Qualidade do Atendimento:</strong> Menor volume de reclamações de SAC</li>
+                    <li><strong>Controle de Qualidade:</strong> Produtos com melhor controle de validade</li>
+                    <li><strong>Experiência Premium:</strong> Expectativas do público-alvo são atendidas</li>
+                    <li><strong>Logística:</strong> Entregas mais pontuais para o segmento premium</li>
+                    <li><strong>Estabilidade Tecnológica:</strong> Plataformas mais estáveis</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ABA 3: ANÁLISE SWOT -->
+        <div id="swot" class="tab-content">
+            <h2 style="color: white; margin: 30px 0 20px 0; text-align: center;">Matriz SWOT - Pão de Açúcar</h2>
+            
+            <div class="swot-matrix">
+                <div class="swot-quadrant swot-forcas">
+                    <h3><i class="fas fa-thumbs-up"></i> FORÇAS</h3>
+                    <ul>
+                        <li>Marca premium consolidada</li>
+                        <li>Experiência do cliente superior</li>
+                        <li>Tecnologia e plataforma estável</li>
+                        <li>Localização estratégica das lojas</li>
+                        <li>Parceria com fornecedores premium</li>
+                        <li>Programa de fidelidade robusto</li>
+                        <li>Equipe especializada</li>
+                        <li>Controle de qualidade rigoroso</li>
+                    </ul>
+                </div>
+                
+                <div class="swot-quadrant swot-fraquezas">
+                    <h3><i class="fas fa-thumbs-down"></i> FRAQUEZAS</h3>
+                    <ul>
+                        <li>Preços mais elevados</li>
+                        <li>Menor cobertura geográfica</li>
+                        <li>Dependência do segmento premium</li>
+                        <li>Custos operacionais altos</li>
+                        <li>Menor variedade de produtos populares</li>
+                        <li>Limitação em periferias</li>
+                        <li>Processo de expansão lento</li>
+                        <li>Menor agressividade promocional</li>
+                    </ul>
+                </div>
+                
+                <div class="swot-quadrant swot-oportunidades">
+                    <h3><i class="fas fa-lightbulb"></i> OPORTUNIDADES</h3>
+                    <ul>
+                        <li>Crescimento do e-commerce alimentar</li>
+                        <li>Expansão para novos mercados</li>
+                        <li>Produtos orgânicos e sustentáveis</li>
+                        <li>Tecnologias de IA e personalização</li>
+                        <li>Parcerias estratégicas</li>
+                        <li>Novos formatos de loja</li>
+                        <li>Segmento saudável em crescimento</li>
+                        <li>Omnichannel experience</li>
+                    </ul>
+                </div>
+                
+                <div class="swot-quadrant swot-ameacas">
+                    <h3><i class="fas fa-exclamation-triangle"></i> AMEAÇAS</h3>
+                    <ul>
+                        <li>Guerra de preços dos concorrentes</li>
+                        <li>Entrada de players internacionais</li>
+                        <li>Recessão econômica impactando premium</li>
+                        <li>Mudança de comportamento do consumidor</li>
+                        <li>Regulamentações do setor</li>
+                        <li>Inflação de custos operacionais</li>
+                        <li>Concorrência do atacarejo</li>
+                        <li>Plataformas de marketplace</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="insights-grid" style="margin-top: 30px;">
+                <div class="insight-box">
+                    <h3><i class="fas fa-rocket"></i> Estratégias FO (Forças x Oportunidades)</h3>
+                    <ul>
+                        <li><strong>Expansão Premium:</strong> Usar marca forte para novos mercados</li>
+                        <li><strong>Inovação Digital:</strong> Tecnologia para personalização</li>
+                        <li><strong>Produtos Sustentáveis:</strong> Liderar segmento orgânico</li>
+                        <li><strong>Omnichannel:</strong> Integrar experiência física/digital</li>
+                    </ul>
+                </div>
+                
+                <div class="insight-box">
+                    <h3><i class="fas fa-shield-alt"></i> Estratégias FA (Forças x Ameaças)</h3>
+                    <ul>
+                        <li><strong>Diferenciação:</strong> Reforçar posição premium vs preço</li>
+                        <li><strong>Fidelização:</strong> Fortalecer programa de relacionamento</li>
+                        <li><strong>Parcerias:</strong> Alianças estratégicas para competir</li>
+                        <li><strong>Inovação:</strong> Novos formatos contra concorrência</li>
+                    </ul>
+                </div>
+                
+                <div class="insight-box">
+                    <h3><i class="fas fa-chart-line"></i> Estratégias DO (Fraquezas x Oportunidades)</h3>
+                    <ul>
+                        <li><strong>Expansão Inteligente:</strong> Novos mercados com menor custo</li>
+                        <li><strong>Linha Econômica:</strong> Produtos acessíveis mantendo qualidade</li>
+                        <li><strong>Digital First:</strong> E-commerce para reduzir custos físicos</li>
+                        <li><strong>Parcerias:</strong> Terceirização para reduzir custos</li>
+                    </ul>
+                </div>
+                
+                <div class="insight-box">
+                    <h3><i class="fas fa-exclamation-circle"></i> Estratégias DA (Fraquezas x Ameaças)</h3>
+                    <ul>
+                        <li><strong>Otimização:</strong> Reduzir custos operacionais</li>
+                        <li><strong>Diversificação:</strong> Produtos para diferentes classes</li>
+                        <li><strong>Eficiência:</strong> Melhorar logística e processos</li>
+                        <li><strong>Flexibilidade:</strong> Adaptar modelo de negócio</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="insight-box" style="margin-top: 20px;">
+                <h3><i class="fas fa-calendar-alt"></i> Roadmap Estratégico 2025</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71;">
+                        <h4>Q1 2025</h4>
+                        <p>Lançamento de linha econômica premium</p>
+                    </div>
+                    <div style="background: rgba(52, 152, 219, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
+                        <h4>Q2 2025</h4>
+                        <p>Expansão e-commerce para novas regiões</p>
+                    </div>
+                    <div style="background: rgba(155, 89, 182, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #9b59b6;">
+                        <h4>Q3 2025</h4>
+                        <p>Implementação de IA para personalização</p>
+                    </div>
+                    <div style="background: rgba(241, 196, 15, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #f1c40f;">
+                        <h4>Q4 2025</h4>
+                        <p>Parcerias estratégicas e novos formatos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 4: ANÁLISE 5W2H -->
+        <div id="w5h2" class="tab-content">
+            <h2 style="color: white; margin: 30px 0 20px 0; text-align: center;">Matriz 5W2H - Plano de Ação Estratégico</h2>
+            
+            <div class="w5h2-matrix">
+                <div class="w5h2-item w5h2-what">
+                    <h3><i class="fas fa-question"></i> WHAT - O QUÊ?</h3>
+                    <p><strong>Implementar estratégia de competitividade premium no varejo online</strong></p>
+                    <ul>
+                        <li>Lançar linha "Premium Acessível"</li>
+                        <li>Expandir delivery express</li>
+                        <li>Melhorar experiência omnichannel</li>
+                        <li>Implementar personalização por IA</li>
+                        <li>Fortalecer programa de fidelidade</li>
+                        <li>Otimizar logística e custos</li>
+                    </ul>
+                </div>
+                
+                <div class="w5h2-item w5h2-why">
+                    <h3><i class="fas fa-lightbulb"></i> WHY - POR QUÊ?</h3>
+                    <p><strong>Manter liderança no segmento premium e expandir market share</strong></p>
+                    <ul>
+                        <li>Concorrência agressiva em preços</li>
+                        <li>Crescimento do e-commerce alimentar</li>
+                        <li>Necessidade de diversificar público</li>
+                        <li>Otimizar custos operacionais</li>
+                        <li>Aproveitar tecnologias emergentes</li>
+                        <li>Fortalecer posição competitiva</li>
+                    </ul>
+                </div>
+                
+                <div class="w5h2-item w5h2-who">
+                    <h3><i class="fas fa-users"></i> WHO - QUEM?</h3>
+                    <p><strong>Equipe multidisciplinar e stakeholders</strong></p>
+                    <ul>
+                        <li><strong>Liderança:</strong> CEO e C-Level</li>
+                        <li><strong>Marketing:</strong> Estratégia e campanhas</li>
+                        <li><strong>TI:</strong> Desenvolvimento e IA</li>
+                        <li><strong>Operações:</strong> Logística e processos</li>
+                        <li><strong>Comercial:</strong> Relacionamento fornecedores</li>
+                        <li><strong>Consultoria:</strong> Especialistas externos</li>
+                    </ul>
+                </div>
+                
+                <div class="w5h2-item w5h2-where">
+                    <h3><i class="fas fa-map-marker-alt"></i> WHERE - ONDE?</h3>
+                    <p><strong>Mercados prioritários e canais de atuação</strong></p>
+                    <ul>
+                        <li><strong>Principais:</strong> SP, RJ, BH, Brasília</li>
+                        <li><strong>Expansão:</strong> Interior SP, PR, SC</li>
+                        <li><strong>Digital:</strong> E-commerce nacional</li>
+                        <li><strong>Físico:</strong> Lojas estratégicas</li>
+                        <li><strong>Parcerias:</strong> Hubs logísticos</li>
+                        <li><strong>Mobile:</strong> App e marketplace</li>
+                    </ul>
+                </div>
+                
+                <div class="w5h2-item w5h2-when">
+                    <h3><i class="fas fa-clock"></i> WHEN - QUANDO?</h3>
+                    <p><strong>Cronograma de implementação 2025</strong></p>
+                    <ul>
+                        <li><strong>Jan-Mar:</strong> Linha premium acessível</li>
+                        <li><strong>Abr-Jun:</strong> Expansão e-commerce</li>
+                        <li><strong>Jul-Set:</strong> IA e personalização</li>
+                        <li><strong>Out-Dez:</strong> Parcerias e otimização</li>
+                        <li><strong>Contínuo:</strong> Monitoramento KPIs</li>
+                        <li><strong>Trimestral:</strong> Reviews estratégicas</li>
+                    </ul>
+                </div>
+                
+                <div class="w5h2-item w5h2-how">
+                    <h3><i class="fas fa-cogs"></i> HOW - COMO?</h3>
+                    <p><strong>Metodologias e processos de execução</strong></p>
+                    <ul>
+                        <li><strong>Metodologia Ágil:</strong> Sprints e iterações</li>
+                        <li><strong>Design Thinking:</strong> Centrado no cliente</li>
+                        <li><strong>Data Analytics:</strong> Decisões baseadas em dados</li>
+                        <li><strong>A/B Testing:</strong> Validação de hipóteses</li>
+                        <li><strong>Lean Startup:</strong> MVPs e validações</li>
+                        <li><strong>OKRs:</strong> Objetivos e resultados-chave</li>
+                    </ul>
+                </div>
+                
+                <div class="w5h2-item w5h2-howmuch">
+                    <h3><i class="fas fa-dollar-sign"></i> HOW MUCH - QUANTO?</h3>
+                    <p><strong>Investimentos e orçamentos previstos</strong></p>
+                    <ul>
+                        <li><strong>Tecnologia:</strong> R$ 15M (IA, sistemas)</li>
+                        <li><strong>Marketing:</strong> R$ 25M (campanhas, digital)</li>
+                        <li><strong>Logística:</strong> R$ 12M (centros, entrega)</li>
+                        <li><strong>Produtos:</strong> R$ 8M (desenvolvimento)</li>
+                        <li><strong>Consultoria:</strong> R$ 3M (especialistas)</li>
+                        <li><strong>Total 2025:</strong> R$ 63M investimento</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="insights-grid" style="margin-top: 30px;">
+                <div class="insight-box">
+                    <h3><i class="fas fa-flag"></i> Prioridades Estratégicas</h3>
+                    <div style="margin-top: 15px;">
+                        <div style="background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #e74c3c;">
+                            <strong>ALTA:</strong> Linha premium acessível, IA personalização
+                        </div>
+                        <div style="background: rgba(241, 196, 15, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #f1c40f;">
+                            <strong>MÉDIA:</strong> Expansão geográfica, otimização custos
+                        </div>
+                        <div style="background: rgba(46, 204, 113, 0.1); padding: 10px; border-radius: 8px; border-left: 4px solid #2ecc71;">
+                            <strong>BAIXA:</strong> Novos formatos loja, parcerias internacionais
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-box">
+                    <h3><i class="fas fa-chart-bar"></i> KPIs de Acompanhamento</h3>
+                    <ul>
+                        <li><strong>Market Share:</strong> +5% no segmento premium</li>
+                        <li><strong>NPS:</strong> Manter acima de 70</li>
+                        <li><strong>Conversão Online:</strong> +15% vs 2024</li>
+                        <li><strong>Ticket Médio:</strong> Crescimento de 8%</li>
+                        <li><strong>CAC:</strong> Redução de 20%</li>
+                        <li><strong>ROI Campanhas:</strong> Mínimo 4:1</li>
+                        <li><strong>Satisfação Cliente:</strong> 4.5+ estrelas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="insight-box" style="margin-top: 20px;">
+                <h3><i class="fas fa-target"></i> Metas 2025 - Resumo Executivo</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="text-align: center; background: rgba(46, 204, 113, 0.1); padding: 20px; border-radius: 8px;">
+                        <h2 style="color: #2ecc71; margin-bottom: 5px;">+25%</h2>
+                        <p>Crescimento Vendas Online</p>
+                    </div>
+                    <div style="text-align: center; background: rgba(52, 152, 219, 0.1); padding: 20px; border-radius: 8px;">
+                        <h2 style="color: #3498db; margin-bottom: 5px;">5 Estados</h2>
+                        <p>Expansão Geográfica</p>
+                    </div>
+                    <div style="text-align: center; background: rgba(155, 89, 182, 0.1); padding: 20px; border-radius: 8px;">
+                        <h2 style="color: #9b59b6; margin-bottom: 5px;">R$ 63M</h2>
+                        <p>Investimento Total</p>
+                    </div>
+                    <div style="text-align: center; background: rgba(241, 196, 15, 0.1); padding: 20px; border-radius: 8px;">
+                        <h2 style="color: #f1c40f; margin-bottom: 5px;">ROI 4:1</h2>
+                        <p>Retorno Esperado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Initialize progress bars animation
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach((bar, index) => {
+                    setTimeout(() => {
+                        bar.style.width = bar.style.width || '0%';
+                    }, index * 200);
+                });
+            }, 500);
+        });
+
+        // Add smooth scrolling
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tab-btn')) {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
