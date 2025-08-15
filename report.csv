@@ -1,4 +1,4 @@
-report_date,total_revenue,google_ads_spend,meta_ads_spend,google_ads_impressions,meta_ads_impressions,google_search_clicks,google_search_impressions,total_youtube_views
+,report_date,total_revenue,google_ads_spend,meta_ads_spend,google_ads_impressions,meta_ads_impressions,google_search_clicks,google_search_impressions,total_youtube_views
 2023-01-01,10618.1,4108.59,1465.24,166400,68380,1877,100807,5958
 2023-01-02,19260.71,3233.62,884.9,130818,66035,641,91312,3743
 2023-01-03,15979.91,2696.89,1380.59,54703,70620,1000,79766,8866
